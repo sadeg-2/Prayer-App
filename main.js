@@ -30,8 +30,8 @@ async function getPrayerTimes(country, city) {
 
 // Example usage
 (async () => {
-  //   const countries = await getCountries("Asia");
-  //   console.log("Countries in Asia:", countries);
+    const countries = await getCountries("Asia");
+    console.log("Countries in Asia:", countries);
 
   const cities = await getCities("Palestine");
   console.log("Cities in Palestine:", cities);

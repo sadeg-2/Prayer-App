@@ -1,10 +1,1 @@
-
-# this for aladan
-
-curl "https://restcountries.com/v3.1/region/Asia"
-
-
-curl "https://api.aladhan.com/v1/timingsByCity?city=Gaza&country=Palestine&method=2"
-
-
-
+curl "https://api.aladhan.com/v1/timingsByCity?city=Gaza&country=Palestine&method=4"
