@@ -8,6 +8,7 @@
 - `utility.js` the functionality logic
 
 ## Requirements
+    0. for testing usage use interface and mapping to can get data 
     1. drop down list to choose continent that will have a fix content 
         - hint how we can use it in the url 
         | Continent   | URL parameter |
@@ -47,7 +48,7 @@
         - the table should show the name of prayer and time of it and it will be today or tomorrow 
     
     6. toast message or custom alert to show if error happen in fetch or not cause the network error
-    
-        
+
+
 
 
