@@ -6,6 +6,7 @@
 - `style.css` the css style of the app
 - `main.js` the logic added to the app
 - `utility.js` the functionality logic
+- `modules\timer.js` represent the logic of timer 
 
 ## Requirements
     0. for testing usage use interface and mapping to can get data 
@@ -46,8 +47,14 @@
     5. render the table of 5 main prayers (Fajr, Dhuhr, Asr, Maghrib, Isha)
         - the content should be responsive design and accessible on mobile and desktop
         - the table should show the name of prayer and time of it and it will be today or tomorrow 
-    
-    6. toast message or custom alert to show if error happen in fetch or not cause the network error
+    6. render the next prayer is next and at what time (today/tomorrow)
+        - if prayer now is isha then the next one is fajer tomorrow
+    7. render live count down that will change every second and show the remaining time with the style     (HH:MM:SS) 
+        - every second or pulse gone should show as a count down *
+        - after each pulse update the status of the ui *
+        - when count down equal 0 the next prayer will change to the next one 
+        - and the count down will calculate the payer time - current time 
+    8. toast message or custom alert to show if error happen in fetch or not cause the network error
 
 
 
