@@ -1,33 +1,39 @@
 import { Timer } from "./modules/timer.js";
+import utils from "./utility.js";
 
+const countrySelection = document.getElementById("county");
+const defaultOptionValue = document.getElementById("defaultValue");
 const liveCountLabel = document.getElementById("liveCount");
+
+async function renderCountries() {
+  defaultOptionValue.textContent = "loading...";
+  try {
+    const countries = await utils.getCountries("asia");
+    defaultOptionValue.textContent = "-- Country Name --";
+
+    if (countries.length === 0) {
+      defaultOptionValue.textContent = "Failed to load countries";
+      return;
+    }
+
+    countries.forEach((country) => {
+      const countyOption = document.createElement("option");
+      countyOption.value = country;
+      countyOption.textContent = country;
+      countrySelection.append(countyOption);
+    });
+  } catch (err) {
+    console.error("Error loading countries:", err);
+    defaultOptionValue.textContent = "Failed to load countries";
+  }
+}
+renderCountries();
+
 
 let timer = new Timer(0, 0, 5, liveCountLabel, () => {
   liveCountLabel.textContent = "HEEE";
 });
 timer.startTimer();
-
-// 1. Get countries by continent
-// async function getCountries(continent) {
-//   const res = await fetch(`https://restcountries.com/v3.1/region/${continent}`);
-//   const data = await res.json();
-//   return data.map((c) => c.name.common); // return array of country names
-// }
-
-// // 2. Get cities of a country
-// async function getCities(country) {
-//   const res = await fetch(
-//     "https://countriesnow.space/api/v0.1/countries/cities",
-//     {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ country }),
-//     }
-//   );
-//   console.log(res);
-//   const data = await res.json();
-//   return data.data; // array of city names
-// }
 
 // // 3. Get prayer times for a city & country
 // async function getPrayerTimes(country, city) {
