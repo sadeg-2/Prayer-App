@@ -94,6 +94,21 @@ async function startPrayerCountdown(country, city) {
 
 }
 
+function displayPrayerTimes(prayerTimes) {
+
+
+  const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+  let html = "<table border='1'><tr><th>Prayer</th><th>Time</th></tr>";
+  for (let prayer of prayers) {
+    html += `<tr><td>${prayer}</td><td>${prayerTimes[prayer]}</td></tr>`;
+  }
+  html += "</table>";
+  document.getElementById("prayerTimeTable").innerHTML = html;  
+  
+  
+}
+
+
 
 
 
@@ -109,7 +124,8 @@ async function startPrayerCountdown(country, city) {
     console.log("Prayer times in Amman:", prayerTimes);
     const countdown = await getNextPrayerCountdown("Jordan", "Amman");
     console.log("Next prayer countdown in Amman:", countdown);
-     startPrayerCountdown("Jordan", "Amman");
+    startPrayerCountdown("Jordan", "Amman");
+    displayPrayerTimes(prayerTimes);
 
 })();
 
