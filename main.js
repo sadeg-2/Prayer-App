@@ -2,38 +2,76 @@ import { Timer } from "./modules/timer.js";
 import utils from "./utility.js";
 
 const countrySelection = document.getElementById("county");
-const defaultOptionValue = document.getElementById("defaultValue");
+const citySelection = document.getElementById("city");
 const liveCountLabel = document.getElementById("liveCount");
 
-async function renderCountries() {
-  defaultOptionValue.textContent = "loading...";
+function resetSelectLabel(selection, message) {
+  selection.innerHTML = `
+    <option value="" id="cityDefaultValue" disabled selected>${message}</option>
+  `;
+}
+async function renderSelection({
+  selectedValue,
+  selectionLabel,
+  selection,
+  fetchingDataFn,
+}) {
+  if (!selectedValue)
+    resetSelectLabel(selection, `-- Select a ${selectionLabel} First --`);
   try {
-    const countries = await utils.getCountries("asia");
-    defaultOptionValue.textContent = "-- Country Name --";
+    const data = await fetchingDataFn(selectedValue);
+    resetSelectLabel(selection, `-- ${selectionLabel} Name --`);
 
-    if (countries.length === 0) {
-      defaultOptionValue.textContent = "Failed to load countries";
+    if (!Array.isArray(data) || data.length === 0) {
+      resetSelectLabel(selection, `No ${selectionLabel} `);
       return;
     }
 
-    countries.forEach((country) => {
-      const countyOption = document.createElement("option");
-      countyOption.value = country;
-      countyOption.textContent = country;
-      countrySelection.append(countyOption);
+    data.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item;
+      option.textContent = item;
+      selection.append(option);
     });
   } catch (err) {
-    console.error("Error loading countries:", err);
-    defaultOptionValue.textContent = "Failed to load countries";
+    console.error(`Error loading ${selectionLabel}:`, err);
+    resetSelectLabel(selection, `Failed to load ${selectionLabel}`);
   }
 }
-renderCountries();
 
+renderSelection({
+  selectedValue: "africa",
+  selectionLabel: "Country",
+  selection: countrySelection,
+  fetchingDataFn: utils.getCountries,
+});
+
+const citiesCache = {};
+
+async function getCachedCities(country) {
+  if (citiesCache[country]) return citiesCache[country];
+  else {
+    const cities = await utils.getCities(country);
+    citiesCache[country] = cities;
+    return cities;
+  }
+}
+async function handleCountrySelection(e) {
+  const selectedCountry = e.target.value;
+  await renderSelection({
+    selectedValue: selectedCountry,
+    selectionLabel: "City",
+    fetchingDataFn: getCachedCities,
+    selection: citySelection,
+  });
+}
 
 let timer = new Timer(0, 0, 5, liveCountLabel, () => {
   liveCountLabel.textContent = "HEEE";
 });
 timer.startTimer();
+
+countrySelection.addEventListener("change", handleCountrySelection);
 
 // // 3. Get prayer times for a city & country
 // async function getPrayerTimes(country, city) {
@@ -42,15 +80,3 @@ timer.startTimer();
 //   const data = await res.json();
 //   return data.data.timings; // object with Fajr, Dhuhr, Asr, Maghrib, Isha, etc.
 // }
-
-// // Example usage
-// (async () => {
-//   const countries = await getCountries("Asia");
-//   console.log("Countries in Asia:", countries);
-
-//   const cities = await getCities("Palestine");
-//   console.log("Cities in Palestine:", cities);
-
-//   //   const prayerTimes = await getPrayerTimes("Palestine", "Gaza");
-//   //   console.log("Prayer times in Gaza:", prayerTimes);
-// })();
