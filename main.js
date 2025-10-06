@@ -1,50 +1,115 @@
-import { Timer } from "./modules/timer.js";
-
-const liveCountLabel = document.getElementById("liveCount");
-
-let timer = new Timer(0, 0, 5, liveCountLabel, () => {
-  liveCountLabel.textContent = "HEEE";
-});
-timer.startTimer();
-
 // 1. Get countries by continent
-// async function getCountries(continent) {
-//   const res = await fetch(`https://restcountries.com/v3.1/region/${continent}`);
-//   const data = await res.json();
-//   return data.map((c) => c.name.common); // return array of country names
-// }
+async function getCountries(continent) {
+  const res = await fetch(`https://restcountries.com/v3.1/region/${continent}`);
+  const data = await res.json();
+  return data.map((c) => c.name.common); // return array of country names
+}
 
-// // 2. Get cities of a country
-// async function getCities(country) {
-//   const res = await fetch(
-//     "https://countriesnow.space/api/v0.1/countries/cities",
-//     {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ country }),
-//     }
-//   );
-//   console.log(res);
-//   const data = await res.json();
-//   return data.data; // array of city names
-// }
+// 2. Get cities of a country
+async function getCities(country) {
+  const res = await fetch(
+    "https://countriesnow.space/api/v0.1/countries/cities",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ country }),
+    }
+  );
+  console.log(res);
+  const data = await res.json();
+  return data.data; // array of city names
+}
 
-// // 3. Get prayer times for a city & country
-// async function getPrayerTimes(country, city) {
-//   const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=2`;
-//   const res = await fetch(url);
-//   const data = await res.json();
-//   return data.data.timings; // object with Fajr, Dhuhr, Asr, Maghrib, Isha, etc.
-// }
+// 3. Get prayer times for a city & country
+async function getPrayerTimes(country, city) {
+  const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=2`;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.data.timings; // object with Fajr, Dhuhr, Asr, Maghrib, Isha, etc.
+}
+async function getNextPrayerCountdown(country, city)
+{
+  const prayerTimes = await getPrayerTimes(country, city);
+//  console.log(prayerTimes);
+  const now = new Date();
+  const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+  for (let prayer of prayers) {
+    const timeParts = prayerTimes[prayer].split(":");
+    const prayerTime = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      parseInt(timeParts[0]),
+      parseInt(timeParts[1])
+    );
+    if (prayerTime > now) {
+      const diffMs = prayerTime - now;
+      const diffHrs = Math.floor(diffMs / 3600000); // hours
+      const diffMins = Math.floor((diffMs % 3600000) / 60000); // minutes
+      const difSecs = Math.floor((diffMs % 60000) / 1000); // seconds
+      return { prayer, hours: diffHrs, minutes: diffMins, seconds: difSecs, day : 'Today'};
+    }
+  }
+  // tomorrowprayer
+  const timeParts = prayerTimes["Fajr"].split(":");
+  const prayerTime = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    parseInt(timeParts[0]),
+    parseInt(timeParts[1])
+  );
+  const diffMs = prayerTime - now;
+  const diffHrs = Math.floor(diffMs / 3600000); // hours
+  const diffMins = Math.floor((diffMs % 3600000) / 60000); // minutes
+  const difSecs = Math.floor((diffMs % 60000) / 1000); // seconds
+  return { prayer: "Fajr", hours: diffHrs, minutes: diffMins, seconds: difSecs, day : 'Tomorrow' };
 
-// // Example usage
-// (async () => {
-//   const countries = await getCountries("Asia");
-//   console.log("Countries in Asia:", countries);
 
-//   const cities = await getCities("Palestine");
-//   console.log("Cities in Palestine:", cities);
+} 
+function formatTime(hours, minutes, seconds) {
+  const h = String(hours).padStart(2, "0");
+  const m = String(minutes).padStart(2, "0");
+  const s = String(seconds).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
 
-//   //   const prayerTimes = await getPrayerTimes("Palestine", "Gaza");
-//   //   console.log("Prayer times in Gaza:", prayerTimes);
-// })();
+async function startPrayerCountdown(country, city) {
+  
+
+   
+  async function updateCountdown() {
+    const result = await getNextPrayerCountdown(country, city);
+    const timeStr = formatTime(result.hours, result.minutes, result.seconds);
+
+    
+    document.getElementById("nextPrayerCountDown").innerText =
+      `Next prayer in ${country} : ${result.prayer} (${result.day}) in ${timeStr}`;
+    
+  }
+
+  await updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+
+}
+
+
+
+
+// Example usage
+(async () => {
+    const countries = await getCountries("Asia");
+    console.log("Countries in Asia:", countries);
+
+  //const cities = await getCities("Palestine");
+//  console.log("Cities in Palestine:", cities);
+
+    const prayerTimes = await getPrayerTimes("Jordan", "Amman");
+    console.log("Prayer times in Amman:", prayerTimes);
+    const countdown = await getNextPrayerCountdown("Jordan", "Amman");
+    console.log("Next prayer countdown in Amman:", countdown);
+     startPrayerCountdown("Jordan", "Amman");
+
+})();
+
