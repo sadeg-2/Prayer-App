@@ -5,9 +5,52 @@ const countrySelection = document.getElementById("county");
 const citySelection = document.getElementById("city");
 const liveCountLabel = document.getElementById("liveCount");
 
+function storeLocally(key, value) {
+  const storedSelection = JSON.parse(localStorage.getItem("selection")) || {};
+  storedSelection[key] = value;
+  localStorage.setItem("selection", JSON.stringify(storedSelection));
+}
+
+async function getStoredSelection() {
+  const storedSelection = JSON.parse(localStorage.getItem("selection")) || {};
+
+  // if (continentSelection.value) {
+
+  if ("africa") {
+    // this is just a hard coded which should be deleted
+
+    // continentSelection.value = storedSelection["continent"];
+    await renderSelection({
+      selectedValue: "africa", // it should be continentSelection.value
+      selectionLabel: "Country",
+      selection: countrySelection,
+      fetchingDataFn: utils.getCountries,
+    });
+  }
+
+  if (storedSelection["country"]) {
+    countrySelection.value = storedSelection["country"];
+
+    await renderSelection({
+      selectedValue: countrySelection.value,
+      selectionLabel: "City",
+      fetchingDataFn: getCachedCities,
+      selection: citySelection,
+    });
+  }
+
+  if (storedSelection["city"]) {
+    citySelection.value = storedSelection["city"];
+  }
+
+  // add the function of rendering MethodFetching
+
+  // if (methodSelection.value) methodSelection.value = storedSelection["method"];
+}
+
 function resetSelectLabel(selection, message) {
   selection.innerHTML = `
-    <option value="" id="cityDefaultValue" disabled selected>${message}</option>
+    <option value="" id="optionDefaultValue" disabled selected>${message}</option>
   `;
 }
 async function renderSelection({
@@ -58,6 +101,7 @@ async function getCachedCities(country) {
 }
 async function handleCountrySelection(e) {
   const selectedCountry = e.target.value;
+  storeLocally("country", selectedCountry);
   await renderSelection({
     selectedValue: selectedCountry,
     selectionLabel: "City",
@@ -66,17 +110,25 @@ async function handleCountrySelection(e) {
   });
 }
 
+async function handleCitySelection(e) {
+  const selectedCity = e.target.value;
+  storeLocally("city", selectedCity);
+
+  /*  just a pseudocode of rendering methods function 
+  await renderMethods({
+    selectedValue: selectedCity,
+    selectionLabel: "Method",
+    fetchingDataFn: utils.getMethods,
+    selection: MethodSelection,
+  });
+  */
+}
+
 let timer = new Timer(0, 0, 5, liveCountLabel, () => {
   liveCountLabel.textContent = "HEEE";
 });
 timer.startTimer();
 
 countrySelection.addEventListener("change", handleCountrySelection);
-
-// // 3. Get prayer times for a city & country
-// async function getPrayerTimes(country, city) {
-//   const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=2`;
-//   const res = await fetch(url);
-//   const data = await res.json();
-//   return data.data.timings; // object with Fajr, Dhuhr, Asr, Maghrib, Isha, etc.
-// }
+citySelection.addEventListener("change", handleCitySelection);
+window.addEventListener("DOMContentLoaded", getStoredSelection);
