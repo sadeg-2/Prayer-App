@@ -28,7 +28,8 @@
         - the content of the list should be dynamic from the url based on the Selected continent
         - also save the value in variable
         - and send request to fetch the city 
-    
+        - show a loading text while while waiting for API data
+
     3. drop down list to choose the city
         - the content of the list should be dynamic from the url based on the Selected county
         - also save the value in variable
