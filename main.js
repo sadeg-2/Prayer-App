@@ -16,12 +16,12 @@ async function getStoredSelection() {
 
   // if (continentSelection.value) {
 
-  if ("africa") {
+  if ("asia") {
     // this is just a hard coded which should be deleted
 
     // continentSelection.value = storedSelection["continent"];
     await renderSelection({
-      selectedValue: "africa", // it should be continentSelection.value
+      selectedValue: "asia", // it should be continentSelection.value
       selectionLabel: "Country",
       selection: countrySelection,
       fetchingDataFn: utils.getCountries,
@@ -61,7 +61,9 @@ async function renderSelection({
 }) {
   if (!selectedValue)
     resetSelectLabel(selection, `-- Select a ${selectionLabel} First --`);
+
   try {
+    resetSelectLabel(selection, "Loading...");
     const data = await fetchingDataFn(selectedValue);
     resetSelectLabel(selection, `-- ${selectionLabel} Name --`);
 
@@ -83,17 +85,47 @@ async function renderSelection({
 }
 
 renderSelection({
-  selectedValue: "africa",
+  selectedValue: "asia",
   selectionLabel: "Country",
   selection: countrySelection,
   fetchingDataFn: utils.getCountries,
 });
+
+const palestineCitiesFallback = [
+  "Gaza",
+  "Khan Yunis",
+  "Rafah",
+  "Deir al-Balah",
+  "Nuseirat",
+  "Beit Lahia",
+  "Beit Hanoun",
+  "Jerusalem",
+  "Hebron",
+  "Yatta",
+  "Dura",
+  "Halhul",
+  "Nablus",
+  "Jenin",
+  "Tulkarm",
+  "Qalqilya",
+  "Ramallah",
+  "Al-Bireh",
+  "Bethlehem",
+  "Dheisheh",
+  "Jericho",
+  "Salfit",
+];
 
 const citiesCache = {};
 
 async function getCachedCities(country) {
   if (citiesCache[country]) return citiesCache[country];
   else {
+    if (country === "Palestine") {
+      citiesCache[country] = palestineCitiesFallback;
+      return palestineCitiesFallback;
+    }
+
     const cities = await utils.getCities(country);
     citiesCache[country] = cities;
     return cities;
