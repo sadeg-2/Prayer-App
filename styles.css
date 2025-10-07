@@ -1,0 +1,145 @@
+/*  Reset some defaults */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Headings */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1a73e8;
+}
+
+/*  Labels and selects  */
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+select {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+/*  Reset button */
+#reset-btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #e53935;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#reset-btn:hover {
+  background-color: #d32f2f;
+}
+
+/*  Table styles  */
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #1a73e8;
+  color: #fff;
+}
+
+/*  Loading state  */
+option:disabled {
+  color: #888;
+  font-style: italic;
+}
+
+.loading {
+  font-style: italic;
+  color: #555;
+}
+
+/* Toast error messages  */
+#error-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #e53935;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  display: none; /* hidden by default */
+  z-index: 1000;
+  animation: slideIn 0.5s forwards, slideOut 0.5s 3.5s forwards;
+}
+
+#error-toast.show {
+  display: block;
+}
+
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-20px); }
+}
+
+/*  Responsive */
+@media (max-width: 600px) {
+  .container {
+    margin: 20px;
+    padding: 15px;
+  }
+
+  #reset-btn {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+}
